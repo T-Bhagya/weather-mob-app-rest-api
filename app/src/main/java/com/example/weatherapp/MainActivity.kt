@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.weatherapp.network.RetrofitClient
 import kotlinx.coroutines.launch
 
-private const val API_KEY = "YOUR_API_KEY"
+private const val API_KEY = "944d6b6658a6b087ee5e306fa146afce"
 
 class MainActivity : AppCompatActivity() {
 
