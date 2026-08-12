@@ -1,95 +1,89 @@
 package com.example.weatherapp
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.weatherapp.network.RetrofitClient
+import com.example.weatherapp.network.WeatherResponse
 import kotlinx.coroutines.launch
 
 private const val API_KEY = "944d6b6658a6b087ee5e306fa146afce"
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var etCitySearch: EditText
-    private lateinit var btnSearchWeather: Button
-    private lateinit var tvCityName: TextView
+    private lateinit var etCity: EditText
+    private lateinit var btnSearch: Button
+
+    private lateinit var tvCity: TextView
     private lateinit var tvTemperature: TextView
-    private lateinit var tvWeatherCondition: TextView
+    private lateinit var tvCondition: TextView
     private lateinit var tvHumidity: TextView
-    private lateinit var tvWindSpeed: TextView
+    private lateinit var tvWind: TextView
+    private lateinit var tvError: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize UI components
-        etCitySearch = findViewById(R.id.etCitySearch)
-        btnSearchWeather = findViewById(R.id.btnSearchWeather)
-        tvCityName = findViewById(R.id.tvCityName)
+        etCity = findViewById(R.id.etCity)
+        btnSearch = findViewById(R.id.btnSearch)
+
+        tvCity = findViewById(R.id.tvCity)
         tvTemperature = findViewById(R.id.tvTemperature)
-        tvWeatherCondition = findViewById(R.id.tvWeatherCondition)
+        tvCondition = findViewById(R.id.tvCondition)
         tvHumidity = findViewById(R.id.tvHumidity)
-        tvWindSpeed = findViewById(R.id.tvWindSpeed)
+        tvWind = findViewById(R.id.tvWind)
+        tvError = findViewById(R.id.tvError)
 
-        // Call temporary API test (Member 3 Step 13)
-        testApiConnection()
+        btnSearch.setOnClickListener {
+            val city = etCity.text.toString().trim()
 
-        // Handle Search Button Click
-        btnSearchWeather.setOnClickListener {
-            val queryCity = etCitySearch.text.toString().trim()
-            if (queryCity.isNotEmpty()) {
-                updateWeatherDisplay(queryCity)
+            if (city.isEmpty()) {
+                tvError.text = "Please enter a city name."
             } else {
-                Toast.makeText(this, "Please enter a city name", Toast.LENGTH_SHORT).show()
+                tvError.text = ""
+                getWeather(city)
             }
         }
     }
 
-    /**
-     * Temporary API connection test (Member 3 Step 12)
-     */
-    private fun testApiConnection() {
+    private fun getWeather(city: String) {
         lifecycleScope.launch {
             try {
                 val response = RetrofitClient.api.getWeather(
-                    "Colombo",
+                    city,
                     API_KEY
                 )
 
                 if (response.isSuccessful) {
-                    println("API CONNECTION SUCCESS")
-                    Log.d("WeatherApp", "API CONNECTION SUCCESS: ${response.body()}")
-                } else {
-                    println("API ERROR: ${response.code()}")
-                    Log.e("WeatherApp", "API ERROR: ${response.code()}")
-                }
+                    val weather = response.body()
 
+                    if (weather != null) {
+                        displayWeather(weather)
+                    } else {
+                        tvError.text = "No weather data available."
+                    }
+                } else {
+                    when (response.code()) {
+                        404 -> tvError.text = "City not found."
+                        else -> tvError.text = "API error."
+                    }
+                }
             } catch (e: Exception) {
-                println("NETWORK ERROR: ${e.message}")
-                Log.e("WeatherApp", "NETWORK ERROR: ${e.message}")
+                tvError.text = "Unable to connect. Please check your internet connection."
             }
         }
     }
 
-    /**
-     * Placeholder method to simulate updating weather data upon user search.
-     * Replace or extend with an API call (e.g., OpenWeatherMap using Retrofit).
-     */
-    private fun updateWeatherDisplay(cityName: String) {
-        tvCityName.text = cityName.lowercase().replaceFirstChar { it.uppercase() }
-
-        // Example mock values for demonstration
-        tvTemperature.text = "30°C"
-        tvWeatherCondition.text = "Sunny"
-        tvHumidity.text = "65%"
-        tvWindSpeed.text = "15 km/h"
-
-        etCitySearch.text.clear()
-        Toast.makeText(this, "Updated weather for $cityName", Toast.LENGTH_SHORT).show()
+    private fun displayWeather(weather: WeatherResponse) {
+        tvCity.text = weather.name
+        tvTemperature.text = "${weather.main.temp} °C"
+        tvCondition.text = weather.weather.firstOrNull()?.description ?: "Unknown"
+        tvHumidity.text = "Humidity: ${weather.main.humidity}%"
+        tvWind.text = "Wind Speed: ${weather.wind.speed} m/s"
+        tvError.text = ""
     }
 }

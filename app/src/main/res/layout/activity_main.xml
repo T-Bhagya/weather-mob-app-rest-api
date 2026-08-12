@@ -73,7 +73,7 @@
 
             <!-- Search Bar & Button -->
             <EditText
-                android:id="@+id/etCitySearch"
+                android:id="@+id/etCity"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@android:drawable/editbox_background"
@@ -88,7 +88,7 @@
                 android:textSize="14sp" />
 
             <Button
-                android:id="@+id/btnSearchWeather"
+                android:id="@+id/btnSearch"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
                 android:layout_marginTop="12dp"
@@ -99,6 +99,18 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:cornerRadius="27dp" />
+
+            <!-- Error Display TextView -->
+            <TextView
+                android:id="@+id/tvError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:textColor="#DC2626"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="Please enter a city name." />
 
             <!-- Current Weather Title -->
             <TextView
@@ -127,7 +139,7 @@
                     android:padding="24dp">
 
                     <TextView
-                        android:id="@+id/tvCityName"
+                        android:id="@+id/tvCity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Colombo"
@@ -155,7 +167,7 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tvWeatherCondition"
+                        android:id="@+id/tvCondition"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
@@ -218,9 +230,9 @@
                         <!-- Wind Speed Block -->
                         <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:layout_weight="1"
+                            android:layout_height="wrap_content"
                             android:background="#E0F2FE"
                             android:gravity="center"
                             android:orientation="vertical"
@@ -242,7 +254,7 @@
                                 android:textSize="12sp" />
 
                             <TextView
-                                android:id="@+id/tvWindSpeed"
+                                android:id="@+id/tvWind"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
