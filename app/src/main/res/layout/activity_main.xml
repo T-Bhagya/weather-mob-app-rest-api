@@ -147,14 +147,6 @@
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/tvDateTime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="TODAY, 10:30 AM"
-                        android:textColor="#3E4850"
-                        android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/tvTemperature"
