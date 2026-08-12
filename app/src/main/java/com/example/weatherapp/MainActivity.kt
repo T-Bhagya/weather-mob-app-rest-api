@@ -1,11 +1,17 @@
 package com.example.weatherapp
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.weatherapp.network.RetrofitClient
+import kotlinx.coroutines.launch
+
+private const val API_KEY = "YOUR_API_KEY"
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,6 +36,9 @@ class MainActivity : AppCompatActivity() {
         tvHumidity = findViewById(R.id.tvHumidity)
         tvWindSpeed = findViewById(R.id.tvWindSpeed)
 
+        // Call temporary API test (Member 3 Step 13)
+        testApiConnection()
+
         // Handle Search Button Click
         btnSearchWeather.setOnClickListener {
             val queryCity = etCitySearch.text.toString().trim()
@@ -37,6 +46,32 @@ class MainActivity : AppCompatActivity() {
                 updateWeatherDisplay(queryCity)
             } else {
                 Toast.makeText(this, "Please enter a city name", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    /**
+     * Temporary API connection test (Member 3 Step 12)
+     */
+    private fun testApiConnection() {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.api.getWeather(
+                    "Colombo",
+                    API_KEY
+                )
+
+                if (response.isSuccessful) {
+                    println("API CONNECTION SUCCESS")
+                    Log.d("WeatherApp", "API CONNECTION SUCCESS: ${response.body()}")
+                } else {
+                    println("API ERROR: ${response.code()}")
+                    Log.e("WeatherApp", "API ERROR: ${response.code()}")
+                }
+
+            } catch (e: Exception) {
+                println("NETWORK ERROR: ${e.message}")
+                Log.e("WeatherApp", "NETWORK ERROR: ${e.message}")
             }
         }
     }
