@@ -3,6 +3,7 @@ package com.example.weatherapp
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +17,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var etCity: EditText
     private lateinit var btnSearch: Button
+    private lateinit var btnHeaderSearch: ImageButton
 
     private lateinit var tvCity: TextView
     private lateinit var tvTemperature: TextView
@@ -30,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         etCity = findViewById(R.id.etCity)
         btnSearch = findViewById(R.id.btnSearch)
+        btnHeaderSearch = findViewById(R.id.btnHeaderSearch)
 
         tvCity = findViewById(R.id.tvCity)
         tvTemperature = findViewById(R.id.tvTemperature)
@@ -38,15 +41,18 @@ class MainActivity : AppCompatActivity() {
         tvWind = findViewById(R.id.tvWind)
         tvError = findViewById(R.id.tvError)
 
-        btnSearch.setOnClickListener {
-            val city = etCity.text.toString().trim()
+        btnSearch.setOnClickListener { performSearch() }
+        btnHeaderSearch.setOnClickListener { performSearch() }
+    }
 
-            if (city.isEmpty()) {
-                tvError.text = "Please enter a city name."
-            } else {
-                tvError.text = ""
-                getWeather(city)
-            }
+    private fun performSearch() {
+        val city = etCity.text.toString().trim()
+
+        if (city.isEmpty()) {
+            tvError.text = getString(R.string.error_empty_city)
+        } else {
+            tvError.text = ""
+            getWeather(city)
         }
     }
 
@@ -55,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 val response = RetrofitClient.api.getWeather(
                     city,
-                    API_KEY
+                    API_KEY,
                 )
 
                 if (response.isSuccessful) {
@@ -64,26 +70,27 @@ class MainActivity : AppCompatActivity() {
                     if (weather != null) {
                         displayWeather(weather)
                     } else {
-                        tvError.text = "No weather data available."
+                        tvError.text = getString(R.string.error_no_data)
                     }
                 } else {
                     when (response.code()) {
-                        404 -> tvError.text = "City not found."
-                        else -> tvError.text = "API error."
+                        404 -> tvError.text = getString(R.string.error_city_not_found)
+                        else -> tvError.text = getString(R.string.error_api)
                     }
                 }
-            } catch (e: Exception) {
-                tvError.text = "Unable to connect. Please check your internet connection."
+            } catch (_: Exception) {
+                tvError.text = getString(R.string.error_connection)
             }
         }
     }
 
     private fun displayWeather(weather: WeatherResponse) {
         tvCity.text = weather.name
-        tvTemperature.text = "${weather.main.temp} °C"
+
+        tvTemperature.text = getString(R.string.temp_unit, weather.main.temp.toString())
         tvCondition.text = weather.weather.firstOrNull()?.description ?: "Unknown"
-        tvHumidity.text = "Humidity: ${weather.main.humidity}%"
-        tvWind.text = "Wind Speed: ${weather.wind.speed} m/s"
+        tvHumidity.text = getString(R.string.humidity_format, weather.main.humidity)
+        tvWind.text = getString(R.string.wind_speed_format, weather.wind.speed)
         tvError.text = ""
     }
 }
